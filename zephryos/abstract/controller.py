@@ -1,5 +1,6 @@
 class AbstractController(object):
     cls_form = None
+    field_types = {}  # todo: add metaclass to generate empty dict in every new class
 
     def __init__(self, cls_form):
         self.cls_form = cls_form
@@ -12,3 +13,7 @@ class AbstractController(object):
 
     def create_empty_form(self):
         raise NotImplemented('create_empty_form')
+
+    @classmethod
+    def add_new_type(cls, name, cls_type):
+        cls.field_types[cls_type] = name
