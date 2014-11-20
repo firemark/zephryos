@@ -25,11 +25,11 @@ class PyTest(TestCommand):
     ]
 
     def initialize_options(self):
-        super(self, PyTest).initialize_options(self)
+        super().initialize_options()
         self.pytest_args = []
 
     def finalize_options(self):
-        super(self, PyTest).finalize_options(self)
+        super().finalize_options()
         self.test_args = []
         self.test_suite = True
 

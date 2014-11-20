@@ -1,14 +1,14 @@
 def serialize_field(
-    type_field, name, full_name=None, default=None,
-    required=False, doc=None, attrs=None, widget=None):
+    type_field, name, fullname=None, default=None,
+    required=False, description=None, attrs=None, widget=None):
 
     return dict(
         type_field=type_field,
         name=name,
-        full_name=full_name or name,
-        doc=doc,
+        fullname=fullname or name,
+        description=description if description else None,
         attrs=attrs or {},
-        widget=widget,
+        #widget=widget,
         required=required,
         default=default
     )

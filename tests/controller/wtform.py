@@ -1,11 +1,11 @@
 from wtforms import Form, BooleanField, StringField, validators
-from zephyros import controller
+from zephryos.wtform import controller
 
 
 class FooForm(Form):
     username = StringField(
-        label='Username',
-        validators=[validators.Length(min=4, max=25)],
+        'Username',
+        #validators=[validators.Length(min=4, max=25)],
         description='First name and Last name',
         default='Ivan Ivanowsky'
     )
@@ -22,19 +22,19 @@ def test_controller_describe_fields():
     assert len(fields) == 2
     assert fields[0] == dict(
         name='username', fullname='Username',
-        require=False, type='text',
+        required=False, type_field='text',
         attrs={}, default='Ivan Ivanowsky',
-        widget={'type': 'input', 'attrs': {}},
+        #widget={'type': 'input', 'attrs': {}},
         description='First name and Last name',
-        validators=[{'type': 'length', 'attrs': {'min': 4, 'max': 25}}]
+        #validators=[{'type': 'length', 'attrs': {'min': 4, 'max': 25}}]
     )
     assert fields[1] == dict(
         name='accept_rules', fullname='I accept the site rules',
-        require=True, type='bool',
-        attrs={}, default='Ivan Ivanowsky',
-        widget={'type': 'checkbox', 'attrs': {}},
+        required=True, type_field='bool',
+        attrs={}, default=None,
+        #widget={'type': 'checkbox', 'attrs': {}},
         description=None,
-        validators=[]
+        #validators=[]
     )
 
 
