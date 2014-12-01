@@ -1,0 +1,11 @@
+{
+  "name": "naive",
+  "description": "A package using naive versioning",
+  "author": "A confused individual <iam@confused.com>",
+  "dependencies": {
+    "backbone": "= 1.1.2",
+    "react": "= 0.12.1",
+    "underscore": "= 1.7.0"
+  },
+  "engine": "node 0.4.1"
+}
