@@ -21,6 +21,17 @@ class WTFormController(AbstractController):
             ) for name, field in fields.items()
         ]
 
+    def describe_form(self):
+        return {
+            "template": getattr(self.cls_form(), "__template__", "default")
+        }
+
+
+    @classmethod
+    def add_new_type(cls, name, cls_type):
+        cls.field_types[cls_type] = name
+
 
 WTFormController.add_new_type("text", wtform_fields.StringField)
 WTFormController.add_new_type("bool", wtform_fields.BooleanField)
+#todo: add more types

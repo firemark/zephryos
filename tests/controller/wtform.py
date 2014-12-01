@@ -40,3 +40,6 @@ def test_controller_describe_fields():
 
 def test_controller_describe_form():
     ctrl = controller.WTFormController(FooForm)
+    data = ctrl.describe_form()
+
+    assert data['template'] == 'default'
