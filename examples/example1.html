@@ -1,0 +1,84 @@
+<html>
+  <head>
+    <title>Hello React</title>
+    <script src="../js/node_modules/react/dist/react.min.js"></script>
+    <script src="../js/node_modules/react/dist/JSXTransformer.js"></script>
+    <script src="../js/node_modules/underscore/underscore-min.js"></script>
+    <script src="../js/node_modules/backbone/backbone-min.js"></script>
+    <script src="../js/zephyros.js"></script>
+  </head>
+  <body>
+    <div id="content"></div>
+    <script type="text/jsx">
+        Zephyros.widgets.bool = Zephyros.createWidget({
+            render: function(){
+                return <input type="checkbox" onChange={this.change} />
+            },
+        });
+        Zephyros.widgets.text = Zephyros.createWidget({
+            render: function () {
+                return <input type="text" value={this.state.value} onChange={this.change} />
+            }
+        });
+        Zephyros.forms.default = Zephyros.createTemplateForm({
+            fieldRender: function () {
+                var field = this.props.field;
+                var widget = this.props.widget;
+                return (
+                    <tr>
+                        <td>{field.fullname}</td>
+                        <td>{widget}</td>
+                    </tr>
+                );
+            },
+            formRender: function(fields) {
+                return (
+                    <form>
+                        <table>
+                            <tr>
+                                <th width='300px'>Field</th>
+                                <td>Input</td>
+                            </tr>
+                            {fields}
+                        </table>
+                        <button>Submit</button>
+                    </form>
+                );
+            }
+        });
+        var fields = [{
+            name: 'username',
+            fullname: 'Username',
+            required: false,
+            type_field: 'text',
+            attrs: {}, default: 'Ivan Ivanowsky',
+            //widget={'type': 'input', 'attrs': {}},
+            description:'First name and Last name',
+        },
+        {
+            name: 'email',
+            fullname: 'Email',
+            required: false,
+            type_field: 'text',
+            attrs: {}, default: 'test@test.pl',
+            //widget={'type': 'input', 'attrs': {}},
+            description:'First name and Last name',
+        },
+        {
+            name: 'accept_rules',
+            fullname: 'I accept the site rules',
+            required: true,
+            type_field: 'bool',
+            attrs: {},
+            default: null,
+            //widget={'type': 'checkbox', 'attrs': {}},
+            description: null,
+        }];
+
+        var form = React.render(
+            Zephyros.createForm(fields),
+            document.getElementById('content')
+        );
+    </script>
+  </body>
+</html>
