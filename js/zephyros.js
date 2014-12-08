@@ -84,6 +84,11 @@ Zephyros.createTemplateForm = function (args) {
                 widget.setData(value);
             });
         },
+        reset: function () {
+            _.forEach(this.refs, function(widget) {
+                widget.setData(widget.props.field.default);
+            });
+        },
         render: function () {
             var widgets = generateWidgets(this.props.fields);
             var viewFields = generateViewField(widgets);
