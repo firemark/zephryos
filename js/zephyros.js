@@ -54,11 +54,12 @@ Zephyros.createTemplateForm = function (args) {
     };
 
     var generateViewField = function(widgets) {
-        return _.map(widgets, function(widget) {
+        return _.map(widgets, function(widget, i) {
             return React.createElement(
                 fieldTemplate, {
                     widget: widget,
-                    field: widget.props.field
+                    field: widget.props.field,
+                    index: i
                 }
             );
         });
@@ -101,5 +102,6 @@ Zephyros.createForm = function (fields, args) {
     args = args || {};
     var templateName = args.template || "default";
     var template = Zephyros.forms[templateName];
+    console.log(Zephyros.forms);
     return React.createElement(template, {fields: fields});
 };

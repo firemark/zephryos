@@ -1,51 +1,26 @@
 <html>
   <head>
     <title>Hello React</title>
-    <script src="../js/node_modules/react/dist/react.min.js"></script>
-    <script src="../js/node_modules/react/dist/JSXTransformer.js"></script>
-    <script src="../js/node_modules/underscore/underscore-min.js"></script>
-    <script src="../js/node_modules/backbone/backbone-min.js"></script>
-    <script src="../js/zephyros.js"></script>
+    <script src="js/node_modules/react/dist/react.js"></script>
+    <script src="js/node_modules/react/dist/JSXTransformer.js"></script>
+    <script src="js/node_modules/underscore/underscore-min.js"></script>
+    <script src="js/node_modules/backbone/backbone-min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <script src="js/zephyros.js"></script>
+    <script src="js/templates/bootstrap.js"></script>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
   </head>
   <body>
-    <div id="content"></div>
-    <script type="text/jsx">
-        Zephyros.widgets.bool = Zephyros.createWidget({
-            render: function(){
-                return <input type="checkbox" onChange={this.change} />
-            },
-        });
-        Zephyros.widgets.text = Zephyros.createWidget({
-            render: function () {
-                return <input type="text" value={this.state.value} onChange={this.change} />
-            }
-        });
-        Zephyros.forms.default = Zephyros.createTemplateForm({
-            fieldRender: function () {
-                var field = this.props.field;
-                var widget = this.props.widget;
-                return (
-                    <tr>
-                        <td>{field.fullname}</td>
-                        <td>{widget}</td>
-                    </tr>
-                );
-            },
-            formRender: function(fields) {
-                return (
-                    <form>
-                        <table>
-                            <tr>
-                                <th width='300px'>Field</th>
-                                <td>Input</td>
-                            </tr>
-                            {fields}
-                        </table>
-                        <button>Submit</button>
-                    </form>
-                );
-            }
-        });
+    <div class="container">
+         <h1>Example form</h1>
+         <div class="jumbotron">
+
+             <div id="content"></div>
+         </div>
+    </div>
+
+    <script>
         var fields = [{
             name: 'username',
             fullname: 'Username',
@@ -53,7 +28,7 @@
             type_field: 'text',
             attrs: {}, default: 'Ivan Ivanowsky',
             //widget={'type': 'input', 'attrs': {}},
-            description:'First name and Last name',
+            description:'First name and Last name'
         },
         {
             name: 'email',
@@ -62,7 +37,7 @@
             type_field: 'text',
             attrs: {}, default: 'test@test.pl',
             //widget={'type': 'input', 'attrs': {}},
-            description:'First name and Last name',
+            description:'First name and Last name'
         },
         {
             name: 'accept_rules',
@@ -72,7 +47,7 @@
             attrs: {},
             default: null,
             //widget={'type': 'checkbox', 'attrs': {}},
-            description: null,
+            description: null
         }];
 
         var form = React.render(
