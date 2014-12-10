@@ -1,7 +1,10 @@
 Zephyros.widgets.bool = Zephyros.createWidget({
     render: function () {
-        var checked = !!this.state.value;
-        return React.createElement("input", {type: "checkbox", checked: checked, onChange: this.change});
+        return React.createElement("input", {
+            id: this.props.uniqId, 
+            type: "checkbox", 
+            checked: !!this.state.value, 
+            onChange: this.change});
     },
     change: function (event) {
         //event.preventDefault();
@@ -14,7 +17,13 @@ Zephyros.widgets.bool = Zephyros.createWidget({
 });
 Zephyros.widgets.text = Zephyros.createWidget({
     render: function () {
-        return React.createElement("input", {type: "text", className: "form-control", value: this.state.value, onChange: this.change});
+        var field = this.props.field;
+        return React.createElement("input", {
+            type: "text", 
+            id: this.props.uniqId, 
+            className: "form-control", 
+            value: this.state.value, 
+            onChange: this.change});
     }
 });
 
@@ -24,7 +33,7 @@ Zephyros.forms.default = Zephyros.createTemplateForm({
         var widget = this.props.widget;
         return (
             React.createElement("div", {className: "form-group"}, 
-                React.createElement("label", {htmlFor: field.name, className: "col-sm-2 control-label"}, 
+                React.createElement("label", {htmlFor: this.props.uniqId, className: "col-sm-2 control-label"}, 
                     field.fullname
                 ), 
                 React.createElement("div", {className: "col-sm-10"}, widget)

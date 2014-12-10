@@ -45,10 +45,15 @@ Zephyros.createTemplateForm = function (args) {
     });
 
     var generateWidgets = function (fields) {
-        return _.map(fields, function (field) {
+        return _.map(fields, function (field, i) {
             var widgetTemplate = Zephyros.widgets[field.type_field];
             return React.createElement(
-                widgetTemplate, {ref: field.name, field: field}
+                widgetTemplate, {
+                    ref: field.name,
+                    field: field,
+                    index: i,
+                    uniqId: Date.now() + "-" + field.name
+                }
             );
         });
     };
@@ -59,7 +64,8 @@ Zephyros.createTemplateForm = function (args) {
                 fieldTemplate, {
                     widget: widget,
                     field: widget.props.field,
-                    index: i
+                    index: i,
+                    uniqId: widget.props.uniqId
                 }
             );
         });
@@ -102,6 +108,5 @@ Zephyros.createForm = function (fields, args) {
     args = args || {};
     var templateName = args.template || "default";
     var template = Zephyros.forms[templateName];
-    console.log(Zephyros.forms);
     return React.createElement(template, {fields: fields});
 };
