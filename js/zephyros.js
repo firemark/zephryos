@@ -43,10 +43,17 @@ Zephyros.createSubformWidget = function (args) {
     var render = args.render;
     var subformTemplate = args.subformTemplate || "subform";
     var getData = args.getData || function () {
-        return _.map(this.refs, function (parentForm) {
+        var data = [];
+        _.forEach(this.refs, function (parentForm, key) {
+            var keyMatch = /form_(\d+)/.exec(key);
+            if (keyMatch === null)
+                return;
+
             var form = parentForm._renderedChildren[".0"];
-            return form.getData();
-        })
+            data[keyMatch[1]] = form.getData();
+        });
+
+        return data;
     };
     var addForm = args.addForm || function (index) {
         var fields = this.props.field.fields;
@@ -150,7 +157,7 @@ Zephyros.createTemplateForm = function (args) {
         },
         setData: function (obj_values) {
             var refs = this.refs;
-            _.forEach(obj_values, function(value, key) {
+            obj_values.forEach(function(value, key) {
                 var widget = refs[key];
                 widget.setData(value);
             });

@@ -68,11 +68,8 @@ Zephyros.widgets.email = Zephyros.createWidget({
 
 Zephyros.widgets.many_nested = Zephyros.createSubformWidget({
     render: function () {
+        var self = this;
         var forms = this.state.forms;
-        var _delForm = this.delForm;
-        var delForm = function (index) {
-            return function () { _delForm(index) };
-        };
         var renderedForms = forms.map(function (form, index) {
             return (
                 React.createElement("li", {key: form.props.index, className: "list-group-item"}, 
@@ -81,7 +78,7 @@ Zephyros.widgets.many_nested = Zephyros.createSubformWidget({
                         React.createElement("div", {className: "col-sm-offset-2 col-sm-10"}, 
                             React.createElement("a", {
                                 className: "btn btn-danger", 
-                                onClick: delForm(index)}, "Delete")
+                                onClick: self.delForm.bind(self, index)}, "Delete")
                         )
 
                     )
@@ -90,7 +87,9 @@ Zephyros.widgets.many_nested = Zephyros.createSubformWidget({
         });
         return (
             React.createElement("div", null, 
-                React.createElement("a", {className: "btn btn-primary", onClick: this.addForm}, "+"), 
+                React.createElement("a", {className: "btn btn-primary", onClick: this.addForm}, 
+                    "Add new"
+                ), 
                 React.createElement("ul", {className: "list-group"}, 
                     renderedForms
                 )
