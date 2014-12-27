@@ -1,0 +1,53 @@
+<html>
+  <head>
+    <title>Hello React</title>
+    <script src="js/node_modules/react/dist/react.js"></script>
+    <script src="js/node_modules/react/dist/JSXTransformer.js"></script>
+    <script src="js/node_modules/underscore/underscore-min.js"></script>
+    <script src="js/node_modules/backbone/backbone-min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <script src="js/zephyros.js"></script>
+    <script src="js/templates/bootstrap.js"></script>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+  </head>
+  <body>
+    <div class="container">
+         <h1>Example form</h1>
+         <div class="jumbotron">
+
+             <div id="content"></div>
+         </div>
+    </div>
+
+    <script>
+        var fields = [{
+            name: 'items',
+            fullname: 'Items',
+            type_field: 'many_nested',
+            attr: {max: -1, min: 0},
+            fields: [
+                {
+                    name: 'name',
+                    fullname: 'Name',
+                    required: true,
+                    type_field: 'text',
+                    default: ''
+                },
+                {
+                    name: 'value',
+                    fullname: 'Cost',
+                    required: true,
+                    type_field: 'integer',
+                    default: ''
+                }
+            ]
+        }];
+
+        var form = React.render(
+            Zephyros.createForm(fields),
+            document.getElementById('content')
+        );
+    </script>
+  </body>
+</html>

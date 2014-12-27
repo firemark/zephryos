@@ -17,6 +17,9 @@ Zephyros.createWidget = function (args) {
     var setData = args.setData || function (value) {
         this.setState({value: value});
     };
+    var reset = args.reset || function (value) {
+        this.setData(this.props.field.default);
+    };
     var change = args.change || function(event) {
         event.preventDefault();
         this.setData(event.target.value);
@@ -35,6 +38,62 @@ Zephyros.createWidget = function (args) {
     });
 };
 
+Zephyros.createSubformWidget = function (args) {
+    args = args || {};
+    var render = args.render;
+    var subformTemplate = args.subformTemplate || "subform";
+    var getData = args.getData || function () {
+        return _.map(this.refs, function (parentForm) {
+            var form = parentForm._renderedChildren[".0"];
+            return form.getData();
+        })
+    };
+    var addForm = args.addForm || function (index) {
+        var fields = this.props.field.fields;
+        var len = this.state.forms.length;
+        var form = Zephyros.createForm(fields, {
+            template: subformTemplate
+        }, {
+            index: _.isNumber(index)? Math.min(index, len)  : this.state.index
+        });
+
+        if (!_.isUndefined(index))
+            this.state.forms.splice(index, 0, form);
+        else
+            this.state.forms.push(form);
+        this.setState({forms: this.state.forms, index: this.state.index + 1});
+    };
+
+    var delForm = args.delForm || function(index) {
+        if (!_.isUndefined(index))
+            this.state.forms.splice(index, 1);
+        else
+            this.state.forms.pop();
+        this.setState({forms: this.state.forms});
+    };
+    var reset = args.reset || function () {
+        this.setState({forms: []});
+    };
+    var change = args.change || function(event) {
+        event.preventDefault();
+        this.setData(event.target.value);
+    };
+
+    return React.createClass({
+        getInitialState: function(){
+            return {
+                forms: [],
+                index: 0
+            };
+        },
+        change: change,
+        render: render,
+        getData: getData,
+        addForm: addForm,
+        delForm: delForm
+    });
+};
+
 Zephyros.createTemplateForm = function (args) {
     var formRender = args.formRender;
     var fieldRender = args.fieldRender;
@@ -46,7 +105,12 @@ Zephyros.createTemplateForm = function (args) {
 
     var generateWidgets = function (fields) {
         return _.map(fields, function (field, i) {
-            var widgetTemplate = Zephyros.widgets[field.type_field];
+            var fieldWidget = field.widget || {};
+            var widgetTemplate = (
+                Zephyros.widgets[fieldWidget.type]
+                || Zephyros.widgets[field.type_field]
+            );
+
             return React.createElement(
                 widgetTemplate, {
                     ref: field.name,
@@ -93,7 +157,7 @@ Zephyros.createTemplateForm = function (args) {
         },
         reset: function () {
             _.forEach(this.refs, function(widget) {
-                widget.setData(widget.props.field.default);
+                widget.reset();
             });
         },
         render: function () {
@@ -104,9 +168,15 @@ Zephyros.createTemplateForm = function (args) {
     });
 };
 
-Zephyros.createForm = function (fields, args) {
+Zephyros.createForm = function (fields, args, props) {
     args = args || {};
+    props = props || {};
+    var ref = args.ref || null;
+    var key = args.key || null;
     var templateName = args.template || "default";
     var template = Zephyros.forms[templateName];
-    return React.createElement(template, {fields: fields});
+    if(_.isUndefined(template))
+        throw "template not found";
+    props.fields = fields;
+    return React.createElement(template, props);
 };

@@ -27,16 +27,89 @@ Zephyros.widgets.text = Zephyros.createWidget({
     }
 });
 
+Zephyros.widgets.integer = Zephyros.createWidget({
+    getData: function (value) {
+        return parseInt(this.state.value);
+    },
+    change: function (event) {
+        var value = event.target.value;
+        event.preventDefault();
+        this.setData(value.replace(/[^0-9]+/, ''));
+    },
+    render: function () {
+        var field = this.props.field;
+        var symbol = "$";
+        return (
+            <div className="input-group">
+                <span className="input-group-addon">{symbol}</span>
+                <input
+                    type="numeric"
+                    id={this.props.uniqId}
+                    className="form-control"
+                    value={this.state.value}
+                    onChange={this.change} />
+            </div>
+        );
+
+    }
+});
+
+Zephyros.widgets.email = Zephyros.createWidget({
+    render: function () {
+        var field = this.props.field;
+        return <input
+            type="text"
+            id={this.props.uniqId}
+            className="form-control"
+            value={this.state.value}
+            onChange={this.change} />;
+    }
+});
+
+Zephyros.widgets.many_nested = Zephyros.createSubformWidget({
+    render: function () {
+        var forms = this.state.forms;
+        var _delForm = this.delForm;
+        var delForm = function (index) {
+            return function () { _delForm(index) };
+        };
+        var renderedForms = forms.map(function (form, index) {
+            return (
+                <li key={form.props.index} className="list-group-item">
+                    <div ref={'form_' + index}>{form}</div>
+                    <div className="form-group">
+                        <div className="col-sm-offset-2 col-sm-10">
+                            <a
+                                className="btn btn-danger"
+                                onClick={delForm(index)}>Delete</a>
+                        </div>
+
+                    </div>
+                </li>
+            );
+        });
+        return (
+            <div>
+                <a className="btn btn-primary" onClick={this.addForm}>+</a>
+                <ul className="list-group">
+                    {renderedForms}
+                </ul>
+            </div>
+        );
+    }
+});
+
 Zephyros.forms.default = Zephyros.createTemplateForm({
     fieldRender: function () {
         var field = this.props.field;
         var widget = this.props.widget;
+        var is_nested = field.type_field === 'many_nested';
         return (
             <div className="form-group">
                 <label htmlFor={this.props.uniqId} className="col-sm-2 control-label">
                     {field.fullname}
                 </label>
-                <div className="col-sm-10">{widget}</div>
+                <div className={!is_nested? "col-sm-10" : ""}>{widget}</div>
             </div>
         );
     },
@@ -53,5 +126,23 @@ Zephyros.forms.default = Zephyros.createTemplateForm({
                 </div>
             </form>
         );
+    }
+});
+
+Zephyros.forms.subform = Zephyros.createTemplateForm({
+    fieldRender: function () {
+        var field = this.props.field;
+        var widget = this.props.widget;
+        return (
+            <div className="form-group">
+                <label htmlFor={this.props.uniqId} className="col-sm-2 control-label">
+                    {field.fullname}
+                </label>
+                <div className="col-sm-9">{widget}</div>
+            </div>
+        );
+    },
+    formRender: function(fields) {
+        return <div className="form-group">{fields}</div>;
     }
 });
