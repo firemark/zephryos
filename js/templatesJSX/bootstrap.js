@@ -103,12 +103,13 @@ Zephyros.forms.default = Zephyros.createTemplateForm({
         var field = this.props.field;
         var widget = this.props.widget;
         var is_nested = field.type_field === 'many_nested';
+        var reqWidget = field.required? <b style={{color: 'red'}}>*</b> : "";
         return (
             <div className="form-group">
-                <label htmlFor={this.props.uniqId} className="col-sm-2 control-label">
-                    {field.fullname}
+                <label htmlFor={this.props.uniqId} className="col-sm-3 control-label">
+                    <span>{field.fullname}</span> {reqWidget}
                 </label>
-                <div className={!is_nested? "col-sm-10" : ""}>{widget}</div>
+                <div className={!is_nested? "col-sm-9" : ""}>{widget}</div>
             </div>
         );
     },
@@ -117,10 +118,8 @@ Zephyros.forms.default = Zephyros.createTemplateForm({
             <form className="form-horizontal">
                 {fields}
                 <div className="form-group">
-                    <div className="col-sm-offset-2 col-sm-10">
-                        <button type="submit" className="btn btn-default">
-                            Sign in
-                        </button>
+                    <div className="col-sm-offset-3 col-sm-9">
+                        <b style={{color: 'red'}}>*</b> are required
                     </div>
                 </div>
             </form>
