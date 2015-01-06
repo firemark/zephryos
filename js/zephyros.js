@@ -55,13 +55,14 @@ Zephyros.createSubformWidget = function (args) {
 
         return data;
     };
+
     var addForm = args.addForm || function (index) {
-        var fields = this.props.field.fields;
+        var fields = this.props.field.attrs.fields;
         var len = this.state.forms.length;
         var form = Zephyros.createForm(fields, {
             template: subformTemplate
         }, {
-            index: _.isNumber(index)? Math.min(index, len)  : this.state.index
+            index: _.isNumber(index)? Math.min(index, len) : this.state.index
         });
 
         if (!_.isUndefined(index))
@@ -114,10 +115,11 @@ Zephyros.createTemplateForm = function (args) {
         return _.map(fields, function (field, i) {
             var fieldWidget = field.widget || {};
             var widgetTemplate = (
-                Zephyros.widgets[fieldWidget.type]
-                || Zephyros.widgets[field.type_field]
+                Zephyros.widgets[fieldWidget.type] ||
+                Zephyros.widgets[field.type_field]
             );
-
+            if (_.isUndefined(widgetTemplate))
+                throw 'widget ' + (field.type_field) + ' not found';
             return React.createElement(
                 widgetTemplate, {
                     ref: field.name,

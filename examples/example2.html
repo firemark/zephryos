@@ -24,24 +24,28 @@
         var fields = [{
             name: 'items',
             fullname: 'Items',
-            type_field: 'many_nested',
-            attr: {max: -1, min: 0},
-            fields: [
-                {
-                    name: 'name',
-                    fullname: 'Name',
-                    required: true,
-                    type_field: 'text',
-                    default: ''
-                },
-                {
-                    name: 'value',
-                    fullname: 'Cost',
-                    required: true,
-                    type_field: 'integer',
-                    default: ''
-                }
-            ]
+            type_field: 'listed_subform',
+            attrs: {
+                max: -1,
+                min: 0,
+                fields: [
+                    {
+                        name: 'name',
+                        fullname: 'Name',
+                        required: true,
+                        type_field: 'text',
+                        default: ''
+                    },
+                    {
+                        name: 'value',
+                        fullname: 'Cost',
+                        required: true,
+                        type_field: 'integer',
+                        widget: {type: 'integer', attrs: {symbol: '$'}},
+                        default: ''
+                    }
+                ]
+            }
         }];
 
         var form = React.render(

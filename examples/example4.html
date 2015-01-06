@@ -1,0 +1,40 @@
+<html>
+  <head>
+    <title>Hello React</title>
+    <script src="js/node_modules/react/dist/react.js"></script>
+    <script src="js/node_modules/react/dist/JSXTransformer.js"></script>
+    <script src="js/node_modules/underscore/underscore-min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="js/node_modules/backbone/backbone-min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <script src="js/zephyros.js"></script>
+    <script src="js/templates/bootstrap.js"></script>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+  </head>
+  <body onload="onLoad()">
+    <div class="container">
+         <h1>Example form</h1>
+         <div class="jumbotron">
+
+             <div id="content">Loading…</div>
+         </div>
+    </div>
+
+    <script>
+        var form = null;
+        function onLoad(){
+              Backbone.ajax({
+                dataType: 'json',
+                url: '/hero/form',
+                success: function (data) {
+                    form = React.render(
+                        Zephyros.createForm(data.fields),
+                        document.getElementById('content')
+                    );
+                }
+            });
+        }
+    </script>
+  </body>
+</html>

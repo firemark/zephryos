@@ -1,3 +1,11 @@
+Zephyros.widgets.unknown = Zephyros.createWidget({
+    render: function () {
+        return <strong>undefined</strong>;
+    },
+    setData: function (value) {},
+    getData: function () {return null;}
+});
+
 Zephyros.widgets.bool = Zephyros.createWidget({
     render: function () {
         return <input
@@ -15,6 +23,21 @@ Zephyros.widgets.bool = Zephyros.createWidget({
     }
 
 });
+
+Zephyros.widgets.select = Zephyros.createWidget({
+    render: function () {
+        var attrs = this.props.field.attrs || {};
+        var choices = attrs.choices || [];
+        return (
+            <select value={this.state.value}  onChange={this.change} className='form-control'>
+                {choices.map(function (choice) {
+                    return <option value={choice.value}>{choice.name}</option>
+                })}
+            </select>
+        );
+    }
+});
+
 Zephyros.widgets.text = Zephyros.createWidget({
     render: function () {
         var field = this.props.field;
@@ -38,7 +61,9 @@ Zephyros.widgets.integer = Zephyros.createWidget({
     },
     render: function () {
         var field = this.props.field;
-        var symbol = "$";
+        var widget = field.widget || {};
+        var attrs = widget.attrs || {};
+        var symbol = attrs.symbol || "Integer";
         return (
             <div className="input-group">
                 <span className="input-group-addon">{symbol}</span>
@@ -49,7 +74,7 @@ Zephyros.widgets.integer = Zephyros.createWidget({
                     value={this.state.value}
                     onChange={this.change} />
             </div>
-        );
+        )
 
     }
 });
@@ -66,32 +91,30 @@ Zephyros.widgets.email = Zephyros.createWidget({
     }
 });
 
-Zephyros.widgets.many_nested = Zephyros.createSubformWidget({
+Zephyros.widgets.listed_subform = Zephyros.createSubformWidget({
     render: function () {
         var self = this;
         var forms = this.state.forms;
-        var renderedForms = forms.map(function (form, index) {
-            return (
-                <li key={form.props.index} className="list-group-item">
-                    <div ref={'form_' + index}>{form}</div>
-                    <div className="form-group">
-                        <div className="col-sm-offset-2 col-sm-10">
-                            <a
-                                className="btn btn-danger"
-                                onClick={self.delForm.bind(self, index)}>Delete</a>
-                        </div>
-
-                    </div>
-                </li>
-            );
-        });
         return (
             <div>
                 <a className="btn btn-primary" onClick={this.addForm}>
                     Add new
                 </a>
                 <ul className="list-group">
-                    {renderedForms}
+                    {forms.map(function (form, index) {
+                return (
+                    <li key={form.props.index} className="list-group-item">
+                        <div ref={'form_' + index}>{form}</div>
+                        <div className="form-group">
+                            <div className="col-sm-offset-2 col-sm-10">
+                                <a
+                                    className="btn btn-danger"
+                                    onClick={self.delForm.bind(self, index)}>Delete</a>
+                            </div>
+                        </div>
+                    </li>
+                );
+                })}
                 </ul>
             </div>
         );
@@ -102,7 +125,7 @@ Zephyros.forms.default = Zephyros.createTemplateForm({
     fieldRender: function () {
         var field = this.props.field;
         var widget = this.props.widget;
-        var is_nested = field.type_field === 'many_nested';
+        var is_nested = field.type_field === 'listed_subform';
         var reqWidget = field.required? <b style={{color: 'red'}}>*</b> : "";
         return (
             <div className="form-group">

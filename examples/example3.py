@@ -26,19 +26,13 @@ class SignForm(Form):
 @app.route("/sign/form")
 def sign_form():
     ctrl = WTFormController(SignForm)
-    import pprint
-    pprint.pprint(ctrl.describe_fields())
     return jsonify({
         'fields': ctrl.describe_fields()
     })
-
-@app.route("/add/form")
-def add_form():
-    return "Hello World!"
 
 @app.route("/")
 def index():
     return app.send_static_file('example3.html')
 
 if __name__ == "__main__":
-    app.run('0.0.0.0', 6969, debug=True)
+    app.run('0.0.0.0', 9069, debug=True)

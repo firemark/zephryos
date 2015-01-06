@@ -1,3 +1,11 @@
+Zephyros.widgets.unknown = Zephyros.createWidget({
+    render: function () {
+        return React.createElement("strong", null, "undefined");
+    },
+    setData: function (value) {},
+    getData: function () {return null;}
+});
+
 Zephyros.widgets.bool = Zephyros.createWidget({
     render: function () {
         return React.createElement("input", {
@@ -15,6 +23,21 @@ Zephyros.widgets.bool = Zephyros.createWidget({
     }
 
 });
+
+Zephyros.widgets.select = Zephyros.createWidget({
+    render: function () {
+        var attrs = this.props.field.attrs || {};
+        var choices = attrs.choices || [];
+        return (
+            React.createElement("select", {value: this.state.value, onChange: this.change, className: "form-control"}, 
+                choices.map(function (choice) {
+                    return React.createElement("option", {value: choice.value}, choice.name)
+                })
+            )
+        );
+    }
+});
+
 Zephyros.widgets.text = Zephyros.createWidget({
     render: function () {
         var field = this.props.field;
@@ -38,7 +61,9 @@ Zephyros.widgets.integer = Zephyros.createWidget({
     },
     render: function () {
         var field = this.props.field;
-        var symbol = "$";
+        var widget = field.widget || {};
+        var attrs = widget.attrs || {};
+        var symbol = attrs.symbol || "Integer";
         return (
             React.createElement("div", {className: "input-group"}, 
                 React.createElement("span", {className: "input-group-addon"}, symbol), 
@@ -49,7 +74,7 @@ Zephyros.widgets.integer = Zephyros.createWidget({
                     value: this.state.value, 
                     onChange: this.change})
             )
-        );
+        )
 
     }
 });
@@ -66,32 +91,30 @@ Zephyros.widgets.email = Zephyros.createWidget({
     }
 });
 
-Zephyros.widgets.many_nested = Zephyros.createSubformWidget({
+Zephyros.widgets.listed_subform = Zephyros.createSubformWidget({
     render: function () {
         var self = this;
         var forms = this.state.forms;
-        var renderedForms = forms.map(function (form, index) {
-            return (
-                React.createElement("li", {key: form.props.index, className: "list-group-item"}, 
-                    React.createElement("div", {ref: 'form_' + index}, form), 
-                    React.createElement("div", {className: "form-group"}, 
-                        React.createElement("div", {className: "col-sm-offset-2 col-sm-10"}, 
-                            React.createElement("a", {
-                                className: "btn btn-danger", 
-                                onClick: self.delForm.bind(self, index)}, "Delete")
-                        )
-
-                    )
-                )
-            );
-        });
         return (
             React.createElement("div", null, 
                 React.createElement("a", {className: "btn btn-primary", onClick: this.addForm}, 
                     "Add new"
                 ), 
                 React.createElement("ul", {className: "list-group"}, 
-                    renderedForms
+                    forms.map(function (form, index) {
+                return (
+                    React.createElement("li", {key: form.props.index, className: "list-group-item"}, 
+                        React.createElement("div", {ref: 'form_' + index}, form), 
+                        React.createElement("div", {className: "form-group"}, 
+                            React.createElement("div", {className: "col-sm-offset-2 col-sm-10"}, 
+                                React.createElement("a", {
+                                    className: "btn btn-danger", 
+                                    onClick: self.delForm.bind(self, index)}, "Delete")
+                            )
+                        )
+                    )
+                );
+                })
                 )
             )
         );
@@ -102,7 +125,7 @@ Zephyros.forms.default = Zephyros.createTemplateForm({
     fieldRender: function () {
         var field = this.props.field;
         var widget = this.props.widget;
-        var is_nested = field.type_field === 'many_nested';
+        var is_nested = field.type_field === 'listed_subform';
         var reqWidget = field.required? React.createElement("b", {style: {color: 'red'}}, "*") : "";
         return (
             React.createElement("div", {className: "form-group"}, 
