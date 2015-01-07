@@ -121,6 +121,51 @@ Zephyros.widgets.listed_subform = Zephyros.createSubformWidget({
     }
 });
 
+Zephyros.widgets.tabled_subform = Zephyros.createSubformWidget({
+    subformTemplate: 'table',
+    render: function () {
+        var self = this;
+        var fields = this.props.field.attrs.fields;
+        var forms = this.state.forms;
+        return (
+            React.createElement("table", {className: "table table-striped"}, 
+                React.createElement("thead", null, 
+                    React.createElement("tr", null, 
+                        React.createElement("th", {className: "col-sm-1"}, " * "), 
+                    fields.map(function (field){
+                        var reqWidget = field.required? React.createElement("b", {style: {color: 'red'}}, "*") : "";
+                        return React.createElement("th", null, field.fullname, " ", reqWidget);
+                    }), 
+                        React.createElement("td", null, " - ")
+                    )
+                ), 
+                React.createElement("tfoot", null, 
+                    React.createElement("th", {colSpan: fields.length}, 
+                        React.createElement("a", {className: "btn btn-primary", onClick: this.addForm}, 
+                            "Add new"
+                        )
+                    )
+                ), 
+                React.createElement("tbody", null, 
+                    forms.map(function (form, index) {
+                return (
+                    React.createElement("tr", {key: form.props.index}, 
+                        React.createElement("th", null, index + 1), 
+                        React.createElement("div", {ref: 'form_' + index}, form), 
+                        React.createElement("td", null, 
+                            React.createElement("a", {
+                                className: "btn btn-danger", 
+                                onClick: self.delForm.bind(self, index)}, "Delete")
+                        )
+                    )
+                );
+                })
+                )
+            )
+        );
+    }
+});
+
 Zephyros.forms.default = Zephyros.createTemplateForm({
     fieldRender: function () {
         var field = this.props.field;
@@ -147,6 +192,17 @@ Zephyros.forms.default = Zephyros.createTemplateForm({
                 )
             )
         );
+    }
+});
+
+Zephyros.forms.table = Zephyros.createTemplateForm({
+    fieldRender: function () {
+        var field = this.props.field;
+        var widget = this.props.widget;
+        return React.createElement("td", {className: "form-group col-sm-3"}, widget);
+    },
+    formRender: function(fields) {
+        return React.createElement("span", null, fields);
     }
 });
 

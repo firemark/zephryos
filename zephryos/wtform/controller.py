@@ -43,7 +43,8 @@ class WTFormController(AbstractController):
             required=input_required in field.validators,
             default=field.default,
             description=field.description,
-            attrs=attrs
+            attrs=attrs,
+            widget=field.widget
         )
 
     @classmethod

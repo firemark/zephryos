@@ -121,6 +121,51 @@ Zephyros.widgets.listed_subform = Zephyros.createSubformWidget({
     }
 });
 
+Zephyros.widgets.tabled_subform = Zephyros.createSubformWidget({
+    subformTemplate: 'table',
+    render: function () {
+        var self = this;
+        var fields = this.props.field.attrs.fields;
+        var forms = this.state.forms;
+        return (
+            <table className="table table-striped">
+                <thead>
+                    <tr>
+                        <th className="col-sm-1"> * </th>
+                    {fields.map(function (field){
+                        var reqWidget = field.required? <b style={{color: 'red'}}>*</b> : "";
+                        return <th>{field.fullname} {reqWidget}</th>;
+                    })}
+                        <td> - </td>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <th colSpan={fields.length}>
+                        <a className="btn btn-primary" onClick={this.addForm}>
+                            Add new
+                        </a>
+                    </th>
+                </tfoot>
+                <tbody>
+                    {forms.map(function (form, index) {
+                return (
+                    <tr key={form.props.index}>
+                        <th>{index + 1}</th>
+                        <div ref={'form_' + index}>{form}</div>
+                        <td>
+                            <a
+                                className="btn btn-danger"
+                                onClick={self.delForm.bind(self, index)}>Delete</a>
+                        </td>
+                    </tr>
+                );
+                })}
+                </tbody>
+            </table>
+        );
+    }
+});
+
 Zephyros.forms.default = Zephyros.createTemplateForm({
     fieldRender: function () {
         var field = this.props.field;
@@ -147,6 +192,17 @@ Zephyros.forms.default = Zephyros.createTemplateForm({
                 </div>
             </form>
         );
+    }
+});
+
+Zephyros.forms.table = Zephyros.createTemplateForm({
+    fieldRender: function () {
+        var field = this.props.field;
+        var widget = this.props.widget;
+        return <td className="form-group col-sm-3">{widget}</td>;
+    },
+    formRender: function(fields) {
+        return <span>{fields}</span>;
     }
 });
 

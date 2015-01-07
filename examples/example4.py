@@ -1,18 +1,17 @@
 from flask import Flask
 from flask.json import jsonify
 from zephryos.wtform.controller import WTFormController
+from zephryos.widget import Widget
 from wtforms import (
-    Form, BooleanField, StringField, FieldList, SelectField, IntegerField,
+    Form, StringField, FieldList, SelectField, IntegerField,
     FormField
 )
-from wtforms import validators
 from wtforms.validators import input_required as inp_req
 
 app = Flask(__name__, static_url_path='', static_folder='./')
 
 
 class ItemForm(Form):
-    __template__ = 'table'
     name = StringField(validators=[inp_req])
     category = SelectField(choices=[
         ('armor', 'Armor'),
@@ -20,7 +19,9 @@ class ItemForm(Form):
         ('potion', 'Potion'),
         ('food', 'Food')
     ], default='armor')
-    level = IntegerField()
+    level = IntegerField(validators=[inp_req])
+    cost = IntegerField(validators=[inp_req],
+                        widget=Widget('integer', symbol='$'))
 
 
 class HeroForm(Form):
@@ -32,7 +33,8 @@ class HeroForm(Form):
         ('elf', 'Elf'),
         ('ogre', 'Ogre')
     ], default='elf')
-    items = FieldList(FormField(ItemForm))
+
+    items = FieldList(FormField(ItemForm), widget=Widget('tabled_subform'))
 
 HeroCtrl = WTFormController(HeroForm)
 
