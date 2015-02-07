@@ -4,6 +4,12 @@ from wtforms import fields as wtform_fields
 from ..serializers import serialize_field
 from ..abstract.controller import AbstractController
 
+from wtforms_json import flatten_json
+
+class DummyMultiDict(dict):
+
+    def getlist(self, key):
+        return [self[key]]
 
 class WTFormController(AbstractController):
     field_types = {}
@@ -21,6 +27,18 @@ class WTFormController(AbstractController):
         return {
             "template": getattr(form, "__template__", "default")
         }
+
+    def create_and_set_form(self, document):
+        data = flatten_json(self.cls_form, document)
+        multi_dict = DummyMultiDict(
+            (key, "" if value is None else value) for key, value in data.items()
+        )
+        return self.cls_form(multi_dict)
+
+    def create_and_set_and_validate_form(self, document):
+        form = self.create_and_set_form(document)
+        form.validate()
+        return form
 
     def get_field_type(self, field):
         return self.field_types.get(field.__class__, ('unknown', None))
@@ -40,7 +58,8 @@ class WTFormController(AbstractController):
             type_field=field_type,
             name=name,
             fullname=field.label.text,
-            required=input_required in field.validators,
+            required=any(
+                isinstance(v, input_required) for v in field.validators),
             default=field.default,
             description=field.description,
             attrs=attrs,

@@ -164,6 +164,13 @@ Zephyros.createTemplateForm = function (args) {
                 widget.setData(value);
             });
         },
+        setErrors: function(errors) {
+            var refs = this.refs;
+            errors.forEach(function(value, key) {
+                var widget = refs[key];
+                widget.setErrors(value);
+            });
+        },
         reset: function () {
             _.forEach(this.refs, function(widget) {
                 widget.reset();

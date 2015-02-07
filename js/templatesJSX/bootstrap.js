@@ -129,6 +129,7 @@ Zephyros.widgets.tabled_subform = Zephyros.createSubformWidget({
         var forms = this.state.forms;
         return (
             <table className="table table-striped">
+                <br />
                 <thead>
                     <tr>
                         <th className="col-sm-1"> * </th>

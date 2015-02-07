@@ -13,5 +13,8 @@ class AbstractController(object):
     def create_and_set_form(self, document):
         raise NotImplemented('create_and_set_form')
 
+    def create_and_set_and_validate_form(self, document):
+        raise NotImplemented('create_and_set_and_validate_form')
+
     def create_empty_form(self):
         raise NotImplemented('create_empty_form')

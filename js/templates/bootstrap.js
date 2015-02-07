@@ -129,6 +129,7 @@ Zephyros.widgets.tabled_subform = Zephyros.createSubformWidget({
         var forms = this.state.forms;
         return (
             React.createElement("table", {className: "table table-striped"}, 
+                React.createElement("br", null), 
                 React.createElement("thead", null, 
                     React.createElement("tr", null, 
                         React.createElement("th", {className: "col-sm-1"}, " * "), 

@@ -5,7 +5,6 @@
     <script src="js/node_modules/react/dist/JSXTransformer.js"></script>
     <script src="js/node_modules/underscore/underscore-min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <script src="js/node_modules/backbone/backbone-min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
     <script src="js/zephyros.js"></script>
     <script src="js/templates/bootstrap.js"></script>
@@ -21,15 +20,41 @@
          </div>
     </div>
 
-    <script>
+    <script type="text/jsx" >
+        var FormTemplate = React.createClass({
+            render: function() {
+            return (
+                <div>
+                    {Zephyros.createForm(this.props.data.fields, {}, {ref: "form"})}
+                    <button className='btn btn-primary' onClick={this.submit}>Submit</button>
+                </div>
+            );
+            },
+
+            submit: function(e) {
+                 $.ajax({
+                    dataType: 'json',
+                    url: '/hero/submit',
+                    method: 'POST',
+                    data: JSON.stringify(this.refs.form.getData()),
+                    contentType: "application/json",
+                    success: function (data) {
+                        if (data.status == "error"){
+                            this.refs.form.setErrors(data.errors);
+                        }
+                    }
+                });
+            }
+        });
+
         var form = null;
         function onLoad(){
-              Backbone.ajax({
+              $.ajax({
                 dataType: 'json',
                 url: '/hero/form',
                 success: function (data) {
                     form = React.render(
-                        Zephyros.createForm(data.fields),
+                        <FormTemplate data={data} />,
                         document.getElementById('content')
                     );
                 }

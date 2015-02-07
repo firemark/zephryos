@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 from flask.json import jsonify
 from zephryos.wtform.controller import WTFormController
 from zephryos.widget import Widget
@@ -12,21 +12,21 @@ app = Flask(__name__, static_url_path='', static_folder='./')
 
 
 class ItemForm(Form):
-    name = StringField(validators=[inp_req])
+    name = StringField(validators=[inp_req()])
     category = SelectField(choices=[
         ('armor', 'Armor'),
         ('weapon', 'Weapon'),
         ('potion', 'Potion'),
         ('food', 'Food')
     ], default='armor')
-    level = IntegerField(validators=[inp_req])
-    cost = IntegerField(validators=[inp_req],
+    level = IntegerField(validators=[inp_req()])
+    cost = IntegerField(validators=[inp_req()],
                         widget=Widget('integer', symbol='$'))
 
 
 class HeroForm(Form):
-    name = StringField(validators=[inp_req])
-    level = IntegerField(validators=[inp_req])
+    name = StringField(validators=[inp_req()])
+    level = IntegerField(validators=[inp_req()])
     race = SelectField(choices=[
         ('human', 'Human'),
         ('dwarf', 'Dwarf'),
@@ -43,6 +43,15 @@ def add_form():
     return jsonify({
         'fields': HeroCtrl.describe_fields()
     })
+
+
+@app.route("/hero/submit", methods=['POST'])
+def submit():
+    form = HeroCtrl.create_and_set_and_validate_form(request.json)
+    if form.errors:
+        return jsonify({"status": "error", "errors": form.errors})
+    else:
+        return jsonify({"status": "ok"})
 
 @app.route("/")
 def index():
