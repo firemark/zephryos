@@ -64,6 +64,7 @@ Zephyros.widgets.integer = Zephyros.createWidget({
         var widget = field.widget || {};
         var attrs = widget.attrs || {};
         var symbol = attrs.symbol || "Integer";
+
         return (
             React.createElement("div", {className: "input-group"}, 
                 React.createElement("span", {className: "input-group-addon"}, symbol), 
@@ -127,6 +128,7 @@ Zephyros.widgets.tabled_subform = Zephyros.createSubformWidget({
         var self = this;
         var fields = this.props.field.attrs.fields;
         var forms = this.state.forms;
+
         return (
             React.createElement("table", {className: "table table-striped"}, 
                 React.createElement("br", null), 
@@ -135,7 +137,7 @@ Zephyros.widgets.tabled_subform = Zephyros.createSubformWidget({
                         React.createElement("th", {className: "col-sm-1"}, " * "), 
                     fields.map(function (field){
                         var reqWidget = field.required? React.createElement("b", {style: {color: 'red'}}, "*") : "";
-                        return React.createElement("th", null, field.fullname, " ", reqWidget);
+                        return (React.createElement("th", null, field.fullname, " ", reqWidget));
                     }), 
                         React.createElement("td", null, " - ")
                     )
@@ -167,18 +169,34 @@ Zephyros.widgets.tabled_subform = Zephyros.createSubformWidget({
     }
 });
 
+var render_errors = function (errs) {
+    return errs.length?(
+    React.createElement("small", null, 
+        React.createElement("ul", {className: "list-unstyled pull-right text-danger"}, 
+        
+            errs.map(function (value) {
+                return React.createElement("li", null, value);
+            })
+        
+        )
+    )
+    ): '';
+};
+
 Zephyros.forms.default = Zephyros.createTemplateForm({
     fieldRender: function () {
         var field = this.props.field;
         var widget = this.props.widget;
         var is_nested = field.type_field === 'listed_subform';
         var reqWidget = field.required? React.createElement("b", {style: {color: 'red'}}, "*") : "";
+        var errs = this.state.errors;
         return (
-            React.createElement("div", {className: "form-group"}, 
+            React.createElement("div", {className: "form-group" + (!is_nested && errs.length? ' has-error' : '')}, 
                 React.createElement("label", {htmlFor: this.props.uniqId, className: "col-sm-3 control-label"}, 
                     React.createElement("span", null, field.fullname), " ", reqWidget
                 ), 
-                React.createElement("div", {className: !is_nested? "col-sm-9" : ""}, widget)
+                React.createElement("div", {className: !is_nested? "col-sm-9" : ""}, widget), 
+                !is_nested? render_errors(errs): ''
             )
         );
     },
@@ -200,10 +218,17 @@ Zephyros.forms.table = Zephyros.createTemplateForm({
     fieldRender: function () {
         var field = this.props.field;
         var widget = this.props.widget;
-        return React.createElement("td", {className: "form-group col-sm-3"}, widget);
+        var errs = this.state.errors;
+        var is_nested = field.type_field === 'listed_subform';
+        return (
+            React.createElement("td", {className: "form-group col-sm-3" + (!is_nested && errs.length? ' has-error' : '')}, 
+                widget, 
+                !is_nested? render_errors(errs): ''
+            )
+        );
     },
     formRender: function(fields) {
-        return React.createElement("span", null, fields);
+        return React.createElement("div", null, fields);
     }
 });
 

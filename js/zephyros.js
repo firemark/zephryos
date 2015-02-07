@@ -17,6 +17,12 @@ Zephyros.createWidget = function (args) {
     var setData = args.setData || function (value) {
         this.setState({value: value});
     };
+    var setErrors = args.setErrors || function(errors) {
+        this.setState({errors: errors});
+    };
+    var clearErrors = args.clearErrors || function(errors) {
+        this.setState({errors: []});
+    };
     var reset = args.reset || function (value) {
         this.setData(this.props.field.default);
     };
@@ -24,17 +30,19 @@ Zephyros.createWidget = function (args) {
         event.preventDefault();
         this.setData(event.target.value);
     };
-
     return React.createClass({
         getInitialState: function(){
             return {
-                value: this.props.field.default
+                value: this.props.field.default,
+                errors: []
             };
         },
         change: change,
         render: render,
         getData: getData,
-        setData: setData
+        setData: setData,
+        setErrors: setErrors,
+        clearErrors: clearErrors
     });
 };
 
@@ -42,20 +50,36 @@ Zephyros.createSubformWidget = function (args) {
     args = args || {};
     var render = args.render;
     var subformTemplate = args.subformTemplate || "subform";
-    var getData = args.getData || function () {
-        var data = [];
+
+    var eachForm = function(callback) {
+
         _.forEach(this.refs, function (parentForm, key) {
             var keyMatch = /form_(\d+)/.exec(key);
             if (keyMatch === null)
                 return;
 
             var form = parentForm._renderedChildren[".0"];
-            data[keyMatch[1]] = form.getData();
+            callback(form, keyMatch[1]);
         });
-
-        return data;
     };
 
+    var getData = args.getData || function () {
+        var data = [];
+        this.eachForm(function (form, key) {
+            data[key] = form.getData();
+        });
+        return data;
+    };
+    var setErrors = function(errors) {
+        this.eachForm(function (form, key) {
+            form.setErrors(errors[key]);
+        });
+    };
+    var clearErrors = function() {
+        this.eachForm(function (form, key) {
+            form.clearErrors();
+        });
+    };
     var addForm = args.addForm || function (index) {
         var fields = this.props.field.attrs.fields;
         var len = this.state.forms.length;
@@ -94,11 +118,14 @@ Zephyros.createSubformWidget = function (args) {
                 index: 0
             };
         },
+        eachForm: eachForm,
         change: change,
         render: render,
         getData: getData,
         addForm: addForm,
-        delForm: delForm
+        delForm: delForm,
+        setErrors: setErrors,
+        clearErrors: clearErrors
     });
 };
 
@@ -108,6 +135,9 @@ Zephyros.createTemplateForm = function (args) {
     var events = args.events || {};
 
     var fieldTemplate = React.createClass({
+        getInitialState: function() {
+            return {errors: []}
+        },
         render: fieldRender
     });
 
@@ -122,7 +152,7 @@ Zephyros.createTemplateForm = function (args) {
                 throw 'widget ' + (field.type_field) + ' not found';
             return React.createElement(
                 widgetTemplate, {
-                    ref: field.name,
+                    ref: "field_" + field.name,
                     field: field,
                     index: i,
                     uniqId: Date.now() + "-" + field.name
@@ -135,6 +165,7 @@ Zephyros.createTemplateForm = function (args) {
         return _.map(widgets, function(widget, i) {
             return React.createElement(
                 fieldTemplate, {
+                    ref: 'widget_' + widget.props.field.name,
                     widget: widget,
                     field: widget.props.field,
                     index: i,
@@ -153,27 +184,42 @@ Zephyros.createTemplateForm = function (args) {
         events: events,
         getData: function () {
             return _.reduce(this.refs, function (obj, widget, key) {
-                obj[key] = widget.getData();
+                if (key.substring(0, 6) != 'field_')
+                    return obj;
+                obj[key.substring(6)] = widget.getData();
                 return obj;
             }, {});
         },
         setData: function (obj_values) {
             var refs = this.refs;
             obj_values.forEach(function(value, key) {
-                var widget = refs[key];
+                var widget = refs["field_" + key];
                 widget.setData(value);
             });
         },
         setErrors: function(errors) {
             var refs = this.refs;
-            errors.forEach(function(value, key) {
-                var widget = refs[key];
-                widget.setErrors(value);
+            _.forEach(errors, function(value, key) {
+                refs["field_" + key].setErrors(value);
+                refs["widget_" + key].setState({errors: value});
+            });
+        },
+        clearErrors: function() {
+            var refs = this.refs;
+            _.forEach(this.props.fields, function(obj) {
+                var key = obj.name;
+                refs["field_" + key].clearErrors();
+                refs["widget_" + key].setState({errors: []});
             });
         },
         reset: function () {
-            _.forEach(this.refs, function(widget) {
-                widget.reset();
+            var refs = this.refs;
+            _.forEach(this.props.fields, function(obj) {
+                var key = obj.name;
+                var field = refs["field_" + key];
+                field.reset();
+                field.clearErrors();
+                refs["widget_" + key].setState({errors: []});
             });
         },
         render: function () {

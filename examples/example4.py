@@ -7,6 +7,7 @@ from wtforms import (
     FormField
 )
 from wtforms.validators import input_required as inp_req
+from pprint import pprint
 
 app = Flask(__name__, static_url_path='', static_folder='./')
 
@@ -48,6 +49,7 @@ def add_form():
 @app.route("/hero/submit", methods=['POST'])
 def submit():
     form = HeroCtrl.create_and_set_and_validate_form(request.json)
+    pprint(request.json)
     if form.errors:
         return jsonify({"status": "error", "errors": form.errors})
     else:

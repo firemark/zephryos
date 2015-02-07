@@ -32,15 +32,19 @@
             },
 
             submit: function(e) {
-                 $.ajax({
+                var form = this.refs.form;
+                form.clearErrors();
+                $.ajax({
                     dataType: 'json',
                     url: '/hero/submit',
                     method: 'POST',
-                    data: JSON.stringify(this.refs.form.getData()),
+                    data: JSON.stringify(form.getData()),
                     contentType: "application/json",
                     success: function (data) {
                         if (data.status == "error"){
-                            this.refs.form.setErrors(data.errors);
+                            form.setErrors(data.errors);
+                        } else if (data.status == "OK") {
+                            alert("Hooray");
                         }
                     }
                 });

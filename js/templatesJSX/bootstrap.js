@@ -64,6 +64,7 @@ Zephyros.widgets.integer = Zephyros.createWidget({
         var widget = field.widget || {};
         var attrs = widget.attrs || {};
         var symbol = attrs.symbol || "Integer";
+
         return (
             <div className="input-group">
                 <span className="input-group-addon">{symbol}</span>
@@ -127,6 +128,7 @@ Zephyros.widgets.tabled_subform = Zephyros.createSubformWidget({
         var self = this;
         var fields = this.props.field.attrs.fields;
         var forms = this.state.forms;
+
         return (
             <table className="table table-striped">
                 <br />
@@ -135,7 +137,7 @@ Zephyros.widgets.tabled_subform = Zephyros.createSubformWidget({
                         <th className="col-sm-1"> * </th>
                     {fields.map(function (field){
                         var reqWidget = field.required? <b style={{color: 'red'}}>*</b> : "";
-                        return <th>{field.fullname} {reqWidget}</th>;
+                        return (<th>{field.fullname} {reqWidget}</th>);
                     })}
                         <td> - </td>
                     </tr>
@@ -167,18 +169,34 @@ Zephyros.widgets.tabled_subform = Zephyros.createSubformWidget({
     }
 });
 
+var render_errors = function (errs) {
+    return errs.length?(
+    <small>
+        <ul className='list-unstyled pull-right text-danger'>
+        {
+            errs.map(function (value) {
+                return <li>{value}</li>;
+            })
+        }
+        </ul>
+    </small>
+    ): '';
+};
+
 Zephyros.forms.default = Zephyros.createTemplateForm({
     fieldRender: function () {
         var field = this.props.field;
         var widget = this.props.widget;
         var is_nested = field.type_field === 'listed_subform';
         var reqWidget = field.required? <b style={{color: 'red'}}>*</b> : "";
+        var errs = this.state.errors;
         return (
-            <div className="form-group">
+            <div className={"form-group" + (!is_nested && errs.length? ' has-error' : '')}>
                 <label htmlFor={this.props.uniqId} className="col-sm-3 control-label">
                     <span>{field.fullname}</span> {reqWidget}
                 </label>
                 <div className={!is_nested? "col-sm-9" : ""}>{widget}</div>
+                {!is_nested? render_errors(errs): ''}
             </div>
         );
     },
@@ -200,10 +218,17 @@ Zephyros.forms.table = Zephyros.createTemplateForm({
     fieldRender: function () {
         var field = this.props.field;
         var widget = this.props.widget;
-        return <td className="form-group col-sm-3">{widget}</td>;
+        var errs = this.state.errors;
+        var is_nested = field.type_field === 'listed_subform';
+        return (
+            <td className={"form-group col-sm-3" + (!is_nested && errs.length? ' has-error' : '')}>
+                {widget}
+                {!is_nested? render_errors(errs): ''}
+            </td>
+        );
     },
     formRender: function(fields) {
-        return <span>{fields}</span>;
+        return <div>{fields}</div>;
     }
 });
 
